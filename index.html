@@ -236,6 +236,26 @@
     }
     .tel-btn:hover { background: var(--rakuten-dark); }
 
+    .product-name {
+      font-size: 12px;
+      color: var(--gray-600);
+      margin-top: 4px;
+      display: flex;
+      align-items: flex-start;
+      gap: 4px;
+      line-height: 1.4;
+    }
+    .product-name .label {
+      flex-shrink: 0;
+      background: var(--rakuten-light);
+      color: var(--rakuten-red);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 4px;
+      margin-top: 1px;
+    }
+
     .rakuten-link {
       display: inline-flex;
       align-items: center;
@@ -733,6 +753,10 @@ function buildCard(row) {
        <a class="tel-btn" href="tel:${escapeHtml(row.phone)}">📞 発信</a>`
     : `<span class="no-phone">電話番号なし</span>`;
 
+  const productHtml = row.product
+    ? `<div class="product-name"><span class="label">売れ筋</span><span>${escapeHtml(row.product)}</span></div>`
+    : '';
+
   const rakutenHtml = row.rakutenUrl
     ? `<a class="rakuten-link" href="${escapeHtml(row.rakutenUrl)}" target="_blank">🛒 楽天ページを開く</a>`
     : '';
@@ -744,6 +768,7 @@ function buildCard(row) {
       <div class="row-badge">Row ${row.row}</div>
       <div class="company-name">${escapeHtml(row.company || '（会社名なし）')}</div>
       <div class="phone-row">${phoneHtml}</div>
+      ${productHtml}
       ${rakutenHtml}
     </div>
   </div>
