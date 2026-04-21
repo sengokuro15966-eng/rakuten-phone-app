@@ -809,8 +809,8 @@ function buildCard(row) {
     : `<button class="btn-call-card no-number">📞 電話番号なし</button>`;
 
   const productDisplay = row.product
-    ? `<div class="product-name"><span class="label">売れ筋商品</span><span>${rubyText(row.product, row.productKana)}</span></div>`
-    : `<div class="product-name"><span class="label">売れ筋商品</span><span style="color:var(--gray-400)">（未登録）</span></div>`;
+    ? `<div class="product-name"><span class="label">商品名</span><span>${rubyText(row.product, row.productKana)}</span></div>`
+    : `<div class="product-name"><span class="label">商品名</span><span style="color:var(--gray-400)">（未登録）</span></div>`;
 
   const rakutenBtnHtml = row.rakutenUrl
     ? `<a class="btn-rakuten" href="${escapeHtml(row.rakutenUrl)}" target="_blank">🛒 楽天市場ページを開く</a>`
