@@ -279,6 +279,40 @@
       padding: 1px 6px; border-radius: 4px; margin-top: 1px;
     }
 
+    /* ===== フリガナ入力 ===== */
+    .kana-input-row {
+      display: flex; align-items: center; gap: 6px;
+      margin-top: 6px;
+    }
+    .kana-input-label {
+      flex-shrink: 0;
+      font-size: 11px; font-weight: 700; color: var(--gray-600);
+      min-width: 52px;
+    }
+    .kana-input {
+      flex: 1;
+      border: 2px solid var(--gray-200);
+      border-radius: 8px;
+      padding: 5px 10px;
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s;
+      background: var(--gray-50);
+    }
+    .kana-input:focus { border-color: var(--rakuten-red); background: white; }
+    .kana-input.saving { opacity: 0.5; }
+    .btn-kana-save {
+      flex-shrink: 0;
+      background: var(--rakuten-red); color: white;
+      border: none; border-radius: 8px;
+      padding: 5px 10px;
+      font-size: 11px; font-weight: 700;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .btn-kana-save:hover { background: var(--rakuten-dark); }
+    .btn-kana-save:disabled { background: var(--gray-400); cursor: default; }
+
     .btn-rakuten {
       display: inline-flex;
       align-items: center;
@@ -826,6 +860,14 @@ function buildCard(row) {
     <div class="card-info">
       <div class="row-badge">Row ${row.row}</div>
       <div class="company-name">${rubyText(row.company || '（会社名なし）', row.companyKana)}</div>
+      <div class="kana-input-row">
+        <span class="kana-input-label">🔤 フリガナ</span>
+        <input class="kana-input" id="kana-input-${row.row}"
+          type="text" placeholder="カタカナで入力..."
+          value="${escapeHtml(row.companyKana || '')}"
+          onkeydown="if(event.key==='Enter') saveCompanyKana(${row.row})">
+        <button class="btn-kana-save" onclick="saveCompanyKana(${row.row})">保存</button>
+      </div>
       <div class="phone-row">${phoneHtml}</div>
       ${productDisplay}
       ${hiddenBadge}
@@ -883,6 +925,40 @@ function renderDashboard() {
   document.getElementById('stat-called').textContent   = called;
   document.getElementById('stat-estimate').textContent = estimate;
   document.getElementById('stat-refused').textContent  = refused;
+}
+
+// ===== フリガナ保存 =====
+async function saveCompanyKana(rowNum) {
+  const input = document.getElementById(`kana-input-${rowNum}`);
+  const btn   = input ? input.nextElementSibling : null;
+  if (!input) return;
+  const value = input.value.trim();
+
+  input.classList.add('saving');
+  if (btn) btn.disabled = true;
+
+  try {
+    const res = await fetch(GAS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'update', row: rowNum, companyKana: value })
+    });
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error);
+
+    const r = allRows.find(r => r.row === rowNum);
+    if (r) {
+      r.companyKana = value;
+      const nameEl = document.querySelector(`#card-${rowNum} .company-name`);
+      if (nameEl) nameEl.innerHTML = rubyText(r.company || '', value);
+    }
+    showToast('✅ フリガナを保存しました');
+  } catch(err) {
+    showToast('⚠️ 保存エラー: ' + err.message);
+  } finally {
+    input.classList.remove('saving');
+    if (btn) btn.disabled = false;
+  }
 }
 
 // ===== 設定 =====
