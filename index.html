@@ -279,39 +279,6 @@
       padding: 1px 6px; border-radius: 4px; margin-top: 1px;
     }
 
-    /* ===== 商品名入力 ===== */
-    .product-input-row {
-      display: flex; align-items: center; gap: 6px;
-      margin-top: 8px;
-    }
-    .product-input-label {
-      flex-shrink: 0;
-      font-size: 11px; font-weight: 700; color: var(--gray-600);
-    }
-    .product-input {
-      flex: 1;
-      border: 2px solid var(--gray-200);
-      border-radius: 8px;
-      padding: 6px 10px;
-      font-size: 13px;
-      font-family: inherit;
-      outline: none;
-      transition: border-color 0.15s;
-      background: var(--gray-50);
-    }
-    .product-input:focus { border-color: var(--rakuten-red); background: white; }
-    .product-input.saving { opacity: 0.5; }
-    .btn-product-save {
-      flex-shrink: 0;
-      background: var(--rakuten-red); color: white;
-      border: none; border-radius: 8px;
-      padding: 6px 12px;
-      font-size: 12px; font-weight: 700;
-      cursor: pointer; transition: background 0.15s;
-    }
-    .btn-product-save:hover { background: var(--rakuten-dark); }
-    .btn-product-save:disabled { background: var(--gray-400); cursor: default; }
-
     .btn-rakuten {
       display: inline-flex;
       align-items: center;
@@ -843,16 +810,7 @@ function buildCard(row) {
 
   const productDisplay = row.product
     ? `<div class="product-name"><span class="label">売れ筋商品</span><span>${rubyText(row.product, row.productKana)}</span></div>`
-    : '';
-  const productInputHtml = `
-    <div class="product-input-row">
-      <span class="product-input-label">🛍️ 商品名</span>
-      <input class="product-input" id="product-input-${row.row}"
-        type="text" placeholder="売れ筋商品名を入力..."
-        value="${escapeHtml(row.product || '')}"
-        onkeydown="if(event.key==='Enter') saveProduct(${row.row})">
-      <button class="btn-product-save" onclick="saveProduct(${row.row})">保存</button>
-    </div>`;
+    : `<div class="product-name"><span class="label">売れ筋商品</span><span style="color:var(--gray-400)">（未登録）</span></div>`;
 
   const rakutenBtnHtml = row.rakutenUrl
     ? `<a class="btn-rakuten" href="${escapeHtml(row.rakutenUrl)}" target="_blank">🛒 楽天市場ページを開く</a>`
@@ -870,7 +828,6 @@ function buildCard(row) {
       <div class="company-name">${rubyText(row.company || '（会社名なし）', row.companyKana)}</div>
       <div class="phone-row">${phoneHtml}</div>
       ${productDisplay}
-      ${productInputHtml}
       ${hiddenBadge}
     </div>
   </div>
@@ -926,38 +883,6 @@ function renderDashboard() {
   document.getElementById('stat-called').textContent   = called;
   document.getElementById('stat-estimate').textContent = estimate;
   document.getElementById('stat-refused').textContent  = refused;
-}
-
-// ===== 商品名保存 =====
-async function saveProduct(rowNum) {
-  const input = document.getElementById(`product-input-${rowNum}`);
-  const btn   = input ? input.nextElementSibling : null;
-  if (!input) return;
-  const value = input.value.trim();
-
-  input.classList.add('saving');
-  if (btn) btn.disabled = true;
-
-  try {
-    const res = await fetch(GAS_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'update', row: rowNum, product: value })
-    });
-    const data = await res.json();
-    if (!data.ok) throw new Error(data.error);
-
-    // ローカルのallRowsにも反映
-    const r = allRows.find(r => r.row === rowNum);
-    if (r) r.product = value;
-
-    showToast('✅ 商品名を保存しました');
-  } catch(err) {
-    showToast('⚠️ 保存エラー: ' + err.message);
-  } finally {
-    input.classList.remove('saving');
-    if (btn) btn.disabled = false;
-  }
 }
 
 // ===== 設定 =====
