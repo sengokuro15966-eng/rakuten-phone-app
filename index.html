@@ -1,961 +1,778 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>楽天リサーチ 電話アプリ</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap');
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#3E2818">
+<title>楽天リサーチ 電話アプリ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=DM+Serif+Display&family=Roboto+Slab:wght@400;700;900&family=Shippori+Mincho:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ===== アメリカンヴィンテージ デザイントークン ===== */
+:root {
+  --cream:        #F2E4C8;
+  --cream-light:  #F7EDD7;
+  --cream-deep:   #E5D2A8;
+  --brown-dark:   #3E2818;
+  --brown:        #5C3D26;
+  --brown-mid:    #7A5236;
+  --red:          #A8312A;
+  --red-deep:     #802520;
+  --gold:         #C4A055;
+  --gold-deep:    #A48336;
+  --green-deal:   #4F6B3A;
+  --ink:          #2A1A0A;
+  --ink-soft:     #5A4530;
+  --paper:        #FBF4E2;
+  --shadow:       0 4px 12px rgba(62,40,24,0.18);
+  --shadow-deep:  0 8px 24px rgba(62,40,24,0.25);
+  --r-sm: 4px;
+  --r-md: 8px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{overscroll-behavior-y:contain;-webkit-tap-highlight-color:transparent}
+body{
+  font-family:'Shippori Mincho','Hiragino Mincho ProN','Yu Mincho',serif;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(196,160,85,0.10) 0%, transparent 50%),
+    radial-gradient(circle at 80% 90%, rgba(168,49,42,0.08) 0%, transparent 50%),
+    repeating-linear-gradient(45deg, transparent 0, transparent 2px, rgba(62,40,24,0.012) 2px, rgba(62,40,24,0.012) 4px),
+    var(--cream);
+  color:var(--ink);
+  min-height:100vh;
+  padding-bottom:80px;
+}
 
-    :root {
-      --rakuten-red: #BF0000;
-      --rakuten-dark: #8B0000;
-      --rakuten-light: #FFE8E8;
-      --rakuten-pale: #FFF5F5;
-      --white: #FFFFFF;
-      --gray-50: #FAFAFA;
-      --gray-100: #F5F5F5;
-      --gray-200: #EEEEEE;
-      --gray-400: #BDBDBD;
-      --gray-600: #757575;
-      --gray-800: #424242;
-      --text: #212121;
-      --success: #2E7D32;
-      --success-bg: #E8F5E9;
-      --warning: #E65100;
-      --warning-bg: #FFF3E0;
-      --info: #1565C0;
-      --info-bg: #E3F2FD;
-    }
+/* ===== ヘッダー ===== */
+.app-header{
+  background:linear-gradient(180deg,var(--red) 0%,var(--red-deep) 100%);
+  color:var(--cream);
+  padding:14px 16px 12px;
+  position:sticky;top:0;z-index:50;
+  box-shadow:0 4px 0 var(--gold),0 6px 16px rgba(62,40,24,0.4);
+  border-bottom:2px solid var(--gold-deep);
+}
+.app-header::before{
+  content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+  background:repeating-linear-gradient(135deg,transparent 0,transparent 8px,rgba(244,224,180,0.04) 8px,rgba(244,224,180,0.04) 9px);
+  pointer-events:none;
+}
+.header-row{display:flex;align-items:center;gap:12px;position:relative;z-index:1}
+.r-mark{
+  width:46px;height:46px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,#fff 0%,#f8e4c4 100%);
+  color:var(--red-deep);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cinzel',serif;font-weight:900;font-size:28px;
+  border:3px double var(--cream);
+  box-shadow:inset 0 -2px 4px rgba(62,40,24,0.2),0 2px 6px rgba(0,0,0,0.25);
+  letter-spacing:-2px;
+}
+.header-title{flex:1;line-height:1.15}
+.header-title .ja{font-family:'Shippori Mincho',serif;font-weight:800;font-size:18px;letter-spacing:1px;text-shadow:1px 1px 0 rgba(0,0,0,0.3)}
+.header-title .en{font-family:'Cinzel',serif;font-weight:500;font-size:9px;letter-spacing:3px;color:var(--gold);margin-top:2px;text-transform:uppercase}
+.header-actions{display:flex;gap:6px;flex-shrink:0}
+.icon-btn{
+  width:36px;height:36px;border-radius:50%;border:2px solid var(--cream);
+  background:rgba(62,40,24,0.5);color:var(--cream);
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;cursor:pointer;transition:all .2s;
+  font-weight:bold;
+}
+.icon-btn:active{transform:scale(0.92);background:var(--brown-dark)}
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+/* ===== ユーザー切替 ===== */
+.user-switcher{
+  display:flex;gap:0;padding:8px 16px 0;
+  background:linear-gradient(180deg,var(--red-deep) 0%,var(--brown-dark) 100%);
+  border-bottom:1px solid var(--gold-deep);
+}
+.user-btn{
+  flex:1;padding:7px 12px;border:none;
+  background:transparent;color:rgba(242,228,200,0.55);
+  font-family:'Shippori Mincho',serif;font-weight:700;font-size:12px;
+  border-bottom:2px solid transparent;cursor:pointer;letter-spacing:2px;
+  transition:all .2s;
+}
+.user-btn.active{
+  color:var(--gold);border-bottom:2px solid var(--gold);
+  text-shadow:0 0 4px rgba(196,160,85,0.5);
+}
 
-    body {
-      font-family: 'Noto Sans JP', sans-serif;
-      background: var(--gray-100);
-      color: var(--text);
-      min-height: 100vh;
-    }
+/* ===== 同期ステータス ===== */
+.sync-bar{
+  background:var(--brown-dark);color:var(--cream-light);
+  padding:6px 16px;font-size:11px;display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--gold-deep);
+  font-family:'Roboto Slab',monospace;letter-spacing:0.5px;
+}
+.sync-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#999;margin-right:6px;vertical-align:middle}
+.sync-dot.ok{background:#7BC265;box-shadow:0 0 6px rgba(123,194,101,0.6)}
+.sync-dot.error{background:#E74C3C;box-shadow:0 0 6px rgba(231,76,60,0.6)}
+.sync-dot.loading{background:var(--gold);animation:blink 0.8s infinite}
+@keyframes blink{50%{opacity:.35}}
 
-    /* ===== ヘッダー ===== */
-    .header {
-      background: var(--rakuten-red);
-      color: var(--white);
-      padding: 0 16px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    }
-    .header-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 0;
-    }
-    .logo { display: flex; align-items: center; gap: 10px; }
-    .logo-icon {
-      font-size: 18px;
-      background: white;
-      color: var(--rakuten-red);
-      width: 36px; height: 36px;
-      border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 900;
-    }
-    .logo-text .main { font-size: 16px; font-weight: 900; }
-    .logo-text .sub  { font-size: 10px; opacity: 0.85; }
-    .header-actions { display: flex; gap: 8px; align-items: center; }
-    .btn-header {
-      background: rgba(255,255,255,0.2);
-      border: 1px solid rgba(255,255,255,0.4);
-      color: white;
-      border-radius: 6px;
-      padding: 6px 12px;
-      font-size: 12px; font-weight: 700;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-    .btn-header:hover { background: rgba(255,255,255,0.3); }
+/* ===== 電話するバナー ===== */
+.call-banner{
+  margin:14px;border:3px double var(--brown-dark);background:var(--paper);
+  position:relative;padding:14px 14px 14px 58px;border-radius:var(--r-md);
+  box-shadow:var(--shadow);
+}
+.call-banner::before{
+  content:'☎';position:absolute;left:14px;top:50%;transform:translateY(-50%);
+  width:34px;height:34px;background:var(--red);color:var(--cream);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:18px;border:2px solid var(--gold);box-shadow:0 2px 4px rgba(0,0,0,0.2);
+}
+.call-banner .title{font-family:'Shippori Mincho',serif;font-weight:800;font-size:18px;color:var(--red-deep);letter-spacing:2px}
+.call-banner .sub{font-size:11px;color:var(--ink-soft);margin-top:2px}
+.call-banner .right-btn{
+  position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  background:var(--brown-dark);color:var(--cream);border:none;
+  padding:8px 14px;border-radius:var(--r-sm);font-family:'Shippori Mincho',serif;font-weight:700;font-size:12px;
+  cursor:pointer;letter-spacing:1px;
+}
+.call-banner .right-btn:active{background:var(--ink)}
 
-    /* ===== 電話するバナー ===== */
-    .call-banner {
-      background: linear-gradient(135deg, #FF4444, var(--rakuten-red));
-      padding: 10px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-    .call-banner-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .call-banner-icon {
-      font-size: 28px;
-      animation: ring 1.5s ease-in-out infinite;
-    }
-    @keyframes ring {
-      0%,100% { transform: rotate(0deg); }
-      10%      { transform: rotate(-15deg); }
-      20%      { transform: rotate(15deg); }
-      30%      { transform: rotate(-10deg); }
-      40%      { transform: rotate(10deg); }
-      50%      { transform: rotate(0deg); }
-    }
-    .call-banner-text .title {
-      color: white;
-      font-size: 16px; font-weight: 900;
-    }
-    .call-banner-text .subtitle {
-      color: rgba(255,255,255,0.85);
-      font-size: 11px;
-      margin-top: 1px;
-    }
-    .btn-call-now {
-      background: white;
-      color: var(--rakuten-red);
-      border: none;
-      border-radius: 999px;
-      padding: 8px 18px;
-      font-size: 13px; font-weight: 900;
-      cursor: pointer;
-      white-space: nowrap;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      transition: transform 0.1s;
-    }
-    .btn-call-now:hover { transform: scale(1.04); }
+/* ===== KPIタイル ===== */
+.kpi-row{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:6px;
+  padding:0 14px;margin-bottom:8px;
+}
+.kpi{
+  background:var(--paper);border:2px solid var(--brown-dark);
+  border-radius:var(--r-sm);padding:7px 4px;text-align:center;
+  position:relative;
+}
+.kpi::after{
+  content:'';position:absolute;inset:2px;border:1px solid var(--brown-mid);border-radius:2px;pointer-events:none;
+}
+.kpi .v{font-family:'Cinzel',serif;font-weight:900;font-size:18px;color:var(--red-deep);line-height:1}
+.kpi .l{font-family:'Shippori Mincho',serif;font-size:9.5px;color:var(--ink-soft);margin-top:3px;letter-spacing:1px}
 
-    /* ===== ダッシュボード ===== */
-    .dashboard {
-      background: var(--rakuten-dark);
-      padding: 12px 16px;
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-    }
-    .stat-box {
-      flex: 1; min-width: 60px;
-      background: rgba(255,255,255,0.12);
-      border-radius: 10px;
-      padding: 8px 6px;
-      text-align: center;
-      color: white;
-      border: 1px solid rgba(255,255,255,0.15);
-    }
-    .stat-val { font-size: 20px; font-weight: 900; line-height: 1; }
-    .stat-lbl { font-size: 10px; opacity: 0.85; margin-top: 3px; }
+/* ===== フィルタバー ===== */
+.filter-bar{
+  display:flex;gap:6px;padding:8px 14px;overflow-x:auto;
+  scrollbar-width:none;-ms-overflow-style:none;
+  background:linear-gradient(180deg,transparent 0%,rgba(196,160,85,0.08) 100%);
+}
+.filter-bar::-webkit-scrollbar{display:none}
+.filter-btn{
+  flex-shrink:0;padding:6px 14px;border:2px solid var(--brown-dark);
+  background:var(--paper);color:var(--ink);
+  border-radius:var(--r-sm);font-family:'Shippori Mincho',serif;font-weight:700;font-size:12px;
+  cursor:pointer;white-space:nowrap;letter-spacing:0.5px;
+  box-shadow:1px 1px 0 var(--brown-mid);transition:all .15s;
+}
+.filter-btn:active{transform:translate(1px,1px);box-shadow:none}
+.filter-btn.active{
+  background:var(--red);color:var(--cream);border-color:var(--red-deep);
+  box-shadow:1px 1px 0 var(--brown-dark);
+}
+.filter-btn.hidden-filter{display:none}
+.filter-btn .badge{
+  display:inline-block;margin-left:6px;background:var(--gold);color:var(--brown-dark);
+  border-radius:8px;padding:1px 6px;font-size:10px;font-weight:900;
+}
 
-    /* ===== 同期バー ===== */
-    .sync-bar {
-      background: var(--gray-200);
-      padding: 5px 16px;
-      display: flex; align-items: center; justify-content: space-between;
-      font-size: 11px; color: var(--gray-600);
-    }
-    .sync-dot {
-      width: 7px; height: 7px;
-      border-radius: 50%; background: var(--gray-400);
-      display: inline-block; margin-right: 5px;
-    }
-    .sync-dot.ok      { background: #4CAF50; }
-    .sync-dot.error   { background: #F44336; }
-    .sync-dot.loading { background: #FF9800; animation: blink 0.8s infinite; }
-    @keyframes blink { 50% { opacity: 0.3; } }
+/* ===== お知らせバー ===== */
+.notice-bar{
+  margin:0 14px;padding:8px 12px;background:var(--cream-deep);
+  border-left:4px solid var(--red);border-radius:var(--r-sm);font-size:12px;color:var(--ink-soft);
+}
 
-    /* ===== フィルターバー ===== */
-    .filter-bar {
-      background: var(--white);
-      padding: 10px 16px;
-      border-bottom: 2px solid var(--gray-200);
-      display: flex; gap: 6px;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-    .filter-bar::-webkit-scrollbar { display: none; }
-    .filter-btn {
-      flex-shrink: 0;
-      padding: 6px 12px;
-      border-radius: 999px;
-      border: 2px solid var(--gray-200);
-      background: var(--white);
-      color: var(--gray-600);
-      font-size: 12px; font-weight: 700;
-      cursor: pointer;
-      transition: all 0.15s;
-      white-space: nowrap;
-    }
-    .filter-btn:hover { border-color: var(--rakuten-red); color: var(--rakuten-red); }
-    .filter-btn.active {
-      background: var(--rakuten-red);
-      border-color: var(--rakuten-red);
-      color: var(--white);
-    }
-    /* 非表示済みフィルターは薄く */
-    .filter-btn.hidden-filter {
-      border-style: dashed;
-      opacity: 0.75;
-    }
+/* ===== 会社カード ===== */
+.cards-area{padding:0 14px}
+.empty-state{
+  text-align:center;padding:60px 20px;color:var(--ink-soft);
+  font-family:'Shippori Mincho',serif;
+}
+.empty-state .icon{font-size:40px;margin-bottom:10px;opacity:0.5}
+.empty-state .text{font-size:14px;letter-spacing:2px}
 
-    /* ===== カードリスト ===== */
-    .card-list {
-      padding: 12px 16px;
-      display: flex; flex-direction: column; gap: 10px;
-      max-width: 720px; margin: 0 auto;
-    }
+.company-card{
+  background:var(--paper);
+  border:3px double var(--brown-dark);
+  border-radius:var(--r-md);
+  padding:14px 14px 12px;
+  margin-bottom:14px;
+  box-shadow:var(--shadow);
+  position:relative;
+  overflow:hidden;
+}
+/* コーナー装飾 */
+.company-card::before,.company-card::after{
+  content:'';position:absolute;width:14px;height:14px;
+  border:2px solid var(--gold-deep);pointer-events:none;
+}
+.company-card::before{top:5px;left:5px;border-right:none;border-bottom:none}
+.company-card::after{bottom:5px;right:5px;border-left:none;border-top:none}
 
-    .maker-card {
-      background: var(--white);
-      border-radius: 12px;
-      padding: 16px;
-      box-shadow: 0 1px 6px rgba(0,0,0,0.08);
-      border-left: 5px solid var(--gray-200);
-      transition: border-color 0.2s;
-    }
-    .maker-card.status-called      { border-left-color: var(--success); }
-    .maker-card.status-nocall      { border-left-color: var(--gray-400); }
-    .maker-card.status-unreachable { border-left-color: var(--info); }
-    .maker-card.status-deal-ok     { background: linear-gradient(135deg, #FAFFFE, #F0FFF4); }
-    /* 翌日非表示対象カードは薄く表示（フィルター経由で表示時） */
-    .maker-card.hidden-card {
-      opacity: 0.6;
-      border-left-style: dashed;
-    }
+.card-top{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px}
+.ai-badge{
+  flex-shrink:0;background:var(--gold);color:var(--brown-dark);
+  border:2px solid var(--gold-deep);border-radius:50%;
+  width:42px;height:42px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-family:'Cinzel',serif;font-weight:900;line-height:1;
+  box-shadow:inset 0 -2px 0 rgba(0,0,0,0.15),0 2px 4px rgba(0,0,0,0.2);
+  transform:rotate(-6deg);
+}
+.ai-badge .top{font-size:9px;letter-spacing:1px}
+.ai-badge .mid{font-size:18px;margin-top:1px}
+.ai-badge.no{background:var(--cream-deep);color:var(--ink-soft);border-color:var(--brown-mid)}
+.ai-badge.no .mid{font-size:14px}
+.ai-badge.skip{background:#cdb38f;color:#6b4f30;border-color:#8c6f3e}
 
-    .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-    .card-info { flex: 1; min-width: 0; }
-    .row-badge { font-size: 10px; color: var(--gray-400); margin-bottom: 2px; }
-    .company-name {
-      font-size: 15px; font-weight: 900; color: var(--text); line-height: 1.6;
-    }
-    ruby { ruby-align: center; }
-    rt {
-      font-size: 10px; font-weight: 400;
-      color: var(--gray-600); letter-spacing: 0.5px;
-    }
+.company-block{flex:1;min-width:0}
+.company-name{
+  font-family:'Shippori Mincho',serif;font-weight:800;font-size:17px;color:var(--ink);
+  line-height:1.3;word-break:break-all;
+}
+.company-name ruby rt{font-size:9px;color:var(--ink-soft);font-weight:400}
+.product-name{font-size:12px;color:var(--ink-soft);margin-top:3px;line-height:1.4}
+.product-name .label{
+  display:inline-block;background:var(--brown-dark);color:var(--cream);
+  padding:1px 6px;border-radius:2px;font-size:10px;margin-right:5px;letter-spacing:1px;
+  font-family:'Shippori Mincho',serif;
+}
 
-    .phone-row { display: flex; align-items: center; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
-    .phone-number { font-size: 16px; font-weight: 700; color: var(--rakuten-red); letter-spacing: 0.5px; }
-    .no-phone { color: var(--gray-400); font-size: 13px; }
+.phone-block{
+  margin-top:10px;padding:8px 10px;background:var(--cream-deep);
+  border:1px dashed var(--brown-mid);border-radius:var(--r-sm);
+  display:flex;align-items:center;gap:10px;
+}
+.phone-icon{font-size:20px;color:var(--red)}
+.phone-number{
+  font-family:'Roboto Slab',monospace;font-weight:700;font-size:17px;color:var(--brown-dark);
+  letter-spacing:1px;
+}
 
-    /* ===== 電話するボタン（カード内・大） ===== */
-    .btn-call-card {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--rakuten-red);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 8px 16px;
-      font-size: 13px; font-weight: 900;
-      cursor: pointer;
-      text-decoration: none;
-      margin-top: 0;
-      flex: 1;
-      justify-content: center;
-      transition: background 0.15s;
-      box-shadow: 0 2px 6px rgba(191,0,0,0.3);
-    }
-    .btn-call-card:hover { background: var(--rakuten-dark); }
-    .btn-call-card.no-number {
-      background: var(--gray-400);
-      box-shadow: none;
-      cursor: default;
-      pointer-events: none;
-    }
+.btn-group{margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.btn-action{
+  padding:10px 8px;border:2px solid var(--brown-dark);
+  background:var(--paper);color:var(--ink);
+  border-radius:var(--r-sm);font-family:'Shippori Mincho',serif;font-weight:700;font-size:13px;
+  cursor:pointer;letter-spacing:1px;
+  box-shadow:1px 1px 0 var(--brown-mid);transition:all .12s;
+  display:flex;align-items:center;justify-content:center;gap:5px;
+}
+.btn-action:active{transform:translate(1px,1px);box-shadow:none}
+.btn-call{background:var(--red);color:var(--cream);border-color:var(--red-deep);box-shadow:1px 1px 0 var(--brown-dark)}
+.btn-call::before{content:'☎';margin-right:4px;font-size:14px}
+.btn-rakuten{background:var(--brown-dark);color:var(--cream);border-color:var(--ink)}
+.btn-rakuten::before{content:'🛒';margin-right:4px}
 
-    .product-name {
-      font-size: 12px; color: var(--gray-600);
-      margin-top: 4px;
-      display: flex; align-items: flex-start; gap: 4px; line-height: 1.4;
-    }
-    .product-name .label {
-      flex-shrink: 0;
-      background: var(--rakuten-light);
-      color: var(--rakuten-red);
-      font-size: 10px; font-weight: 700;
-      padding: 1px 6px; border-radius: 4px; margin-top: 1px;
-    }
+.status-row{
+  margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;
+  padding-top:10px;border-top:1px dashed var(--brown-mid);
+}
+.status-chip{
+  flex:1;min-width:0;padding:6px 6px;border:1.5px solid var(--brown-mid);
+  background:var(--cream-light);color:var(--ink-soft);
+  border-radius:var(--r-sm);font-family:'Shippori Mincho',serif;font-weight:700;font-size:11px;
+  text-align:center;cursor:pointer;letter-spacing:0.5px;transition:all .15s;
+  display:flex;align-items:center;justify-content:center;gap:3px;
+}
+.status-chip:active{transform:scale(0.96)}
+.status-chip.tel-ok.active{background:var(--green-deal);color:var(--cream);border-color:#3a5028}
+.status-chip.tel-ng.active{background:#7a5236;color:var(--cream);border-color:#5C3D26}
+.status-chip.tel-busy.active{background:var(--gold-deep);color:var(--cream);border-color:#7a601f}
+.status-chip.deal-ok.active{background:var(--green-deal);color:var(--cream);border-color:#3a5028}
+.status-chip.deal-ng.active{background:var(--red);color:var(--cream);border-color:var(--red-deep)}
+.status-chip.deal-pending.active{background:var(--brown-mid);color:var(--cream);border-color:var(--brown)}
 
-    .btn-rakuten {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      background: linear-gradient(135deg, #FF4444 0%, var(--rakuten-red) 100%);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 9px 16px;
-      font-size: 13px; font-weight: 900;
-      text-decoration: none;
-      cursor: pointer;
-      transition: all 0.15s;
-      box-shadow: 0 2px 8px rgba(191,0,0,0.35);
-      letter-spacing: 0.3px;
-      flex: 1;
-    }
-    .btn-rakuten:hover {
-      background: linear-gradient(135deg, var(--rakuten-red) 0%, var(--rakuten-dark) 100%);
-      box-shadow: 0 4px 12px rgba(191,0,0,0.45);
-      transform: translateY(-1px);
-    }
-    .btn-rakuten:active { transform: translateY(0); }
-    .btn-rakuten.no-url {
-      background: var(--gray-200);
-      color: var(--gray-400);
-      box-shadow: none;
-      cursor: default;
-      pointer-events: none;
-    }
-    .card-action-row {
-      display: flex; gap: 8px; margin-top: 8px;
-    }
+.status-divider{
+  margin-top:6px;font-size:10px;color:var(--ink-soft);letter-spacing:2px;
+  font-family:'Shippori Mincho',serif;text-align:left;
+}
 
-    /* ===== ステータス操作 ===== */
-    .status-section {
-      margin-top: 12px; padding-top: 12px;
-      border-top: 1px solid var(--gray-100);
-      display: flex; flex-direction: column; gap: 10px;
-    }
-    .status-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-    .status-label { font-size: 11px; font-weight: 700; color: var(--gray-600); min-width: 70px; }
-    .status-btns { display: flex; gap: 5px; flex-wrap: wrap; }
-    .status-btn {
-      padding: 5px 10px;
-      border-radius: 6px;
-      border: 2px solid var(--gray-200);
-      background: var(--white);
-      font-size: 12px; font-weight: 700;
-      cursor: pointer;
-      transition: all 0.15s;
-      color: var(--gray-600);
-    }
-    .status-btn:hover { border-color: var(--rakuten-red); color: var(--rakuten-red); }
-    .status-btn.active-schedule    { background: #FFF3E0; border-color: #FF6D00; color: #FF6D00; }
-    .status-btn.active-called      { background: var(--success-bg); border-color: var(--success); color: var(--success); }
-    .status-btn.active-nocall      { background: var(--gray-100); border-color: var(--gray-400); color: var(--gray-600); }
-    .status-btn.active-unreachable { background: var(--info-bg); border-color: var(--info); color: var(--info); }
-    .status-btn.active-deal-ok     { background: var(--success-bg); border-color: var(--success); color: var(--success); }
-    .status-btn.active-deal-ng     { background: var(--warning-bg); border-color: var(--warning); color: var(--warning); }
-    .status-btn.saving { opacity: 0.6; pointer-events: none; }
+.status-tag{
+  display:inline-block;padding:1px 6px;border-radius:2px;font-size:10px;font-weight:700;
+  margin-right:4px;font-family:'Shippori Mincho',serif;
+}
+.tag-tel-done{background:var(--green-deal);color:var(--cream)}
+.tag-deal-done{background:var(--gold);color:var(--brown-dark)}
+.tag-tel-busy{background:var(--gold-deep);color:var(--cream)}
+.tag-tel-ng{background:var(--brown);color:var(--cream)}
+.tag-deal-ng{background:var(--red);color:var(--cream)}
 
-    /* 翌日非表示バッジ */
-    .hidden-badge {
-      display: inline-block;
-      background: var(--gray-200);
-      color: var(--gray-600);
-      font-size: 10px; font-weight: 700;
-      padding: 2px 8px; border-radius: 4px;
-      margin-top: 6px;
-    }
+/* ===== ローディング ===== */
+.loading{
+  display:none;text-align:center;padding:30px;color:var(--brown-mid);
+  font-family:'Shippori Mincho',serif;font-size:13px;
+}
+.loading.show{display:block}
+.loading::before{content:'⌛';display:inline-block;margin-right:6px;animation:spin 1s infinite linear}
+@keyframes spin{100%{transform:rotate(360deg)}}
 
-    /* ===== 設定モーダル ===== */
-    .modal-overlay {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 200;
-      display: none; align-items: center; justify-content: center;
-      padding: 20px;
-    }
-    .modal-overlay.open { display: flex; }
-    .modal {
-      background: var(--white);
-      border-radius: 16px; padding: 24px;
-      width: 100%; max-width: 480px;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.2);
-    }
-    .modal h2 { font-size: 18px; font-weight: 900; color: var(--rakuten-red); margin-bottom: 8px; }
-    .modal p { font-size: 13px; color: var(--gray-600); line-height: 1.6; margin-bottom: 16px; }
-    .modal input {
-      width: 100%; padding: 10px 12px;
-      border: 2px solid var(--gray-200); border-radius: 8px;
-      font-size: 13px; margin-bottom: 12px; outline: none;
-      transition: border-color 0.15s;
-    }
-    .modal input:focus { border-color: var(--rakuten-red); }
-    .modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
-    .btn-cancel {
-      padding: 8px 16px; border-radius: 8px;
-      border: 2px solid var(--gray-200); background: var(--white);
-      color: var(--gray-600); font-size: 13px; font-weight: 700; cursor: pointer;
-    }
-    .btn-save {
-      padding: 8px 20px; border-radius: 8px; border: none;
-      background: var(--rakuten-red); color: var(--white);
-      font-size: 13px; font-weight: 700; cursor: pointer;
-    }
-    .btn-save:hover { background: var(--rakuten-dark); }
+/* ===== トースト ===== */
+.toast{
+  position:fixed;bottom:80px;left:50%;transform:translateX(-50%);
+  background:var(--brown-dark);color:var(--cream);
+  padding:10px 16px;border-radius:var(--r-sm);font-family:'Shippori Mincho',serif;
+  font-size:13px;letter-spacing:1px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.4);
+  border:1px solid var(--gold);
+  opacity:0;pointer-events:none;transition:opacity .3s;z-index:1000;
+}
+.toast.show{opacity:1}
 
-    /* ===== トースト ===== */
-    .toast {
-      position: fixed; bottom: 80px; left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      background: var(--gray-800); color: white;
-      padding: 10px 20px; border-radius: 999px;
-      font-size: 13px; font-weight: 700;
-      opacity: 0; transition: all 0.25s;
-      pointer-events: none; white-space: nowrap; z-index: 300;
-    }
-    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+/* ===== フッター ===== */
+.footer{
+  background:linear-gradient(180deg,var(--brown-dark) 0%,var(--ink) 100%);
+  color:var(--cream);text-align:center;padding:10px;
+  font-family:'Shippori Mincho',serif;font-size:11px;letter-spacing:2px;
+  border-top:3px double var(--gold);margin-top:20px;
+}
+.footer .small{font-family:'Cinzel',serif;font-size:9px;color:var(--gold);letter-spacing:2px;display:block;margin-top:3px;text-transform:uppercase}
 
-    /* ===== 空状態 ===== */
-    .empty-state { text-align: center; padding: 60px 20px; color: var(--gray-400); }
-    .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
-    .empty-state p { font-size: 14px; }
-
-    /* ===== フッター ===== */
-    .footer {
-      text-align: center; padding: 24px 16px;
-      font-size: 11px; color: var(--gray-400);
-      border-top: 1px solid var(--gray-200); margin-top: 20px;
-    }
-    .footer .designer { color: var(--rakuten-red); font-weight: 700; }
-
-    /* ===== ローディング ===== */
-    .loading-spinner { display: none; text-align: center; padding: 40px; color: var(--gray-400); font-size: 14px; }
-    .loading-spinner.show { display: block; }
-    .spinner {
-      width: 32px; height: 32px;
-      border: 3px solid var(--gray-200); border-top-color: var(--rakuten-red);
-      border-radius: 50%; animation: spin 0.8s linear infinite;
-      margin: 0 auto 12px;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-  </style>
-  <script src="https://cdn.jsdelivr.net/npm/kuroshiro@1.2.0/dist/kuroshiro.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/kuroshiro-analyzer-kuromoji@1.1.3/dist/kuroshiro-analyzer-kuromoji.min.js"></script>
+/* ===== 設定モーダル ===== */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(62,40,24,0.65);display:none;
+  align-items:center;justify-content:center;z-index:200;padding:20px;
+}
+.modal-overlay.show{display:flex}
+.modal-box{
+  background:var(--paper);border:3px double var(--brown-dark);border-radius:var(--r-md);
+  max-width:400px;width:100%;padding:20px;
+  box-shadow:var(--shadow-deep);position:relative;
+}
+.modal-box::before,.modal-box::after{
+  content:'';position:absolute;width:14px;height:14px;border:2px solid var(--gold-deep);
+}
+.modal-box::before{top:6px;left:6px;border-right:none;border-bottom:none}
+.modal-box::after{bottom:6px;right:6px;border-left:none;border-top:none}
+.modal-title{
+  font-family:'Shippori Mincho',serif;font-weight:800;font-size:18px;color:var(--red-deep);
+  margin-bottom:12px;letter-spacing:2px;text-align:center;
+}
+.modal-box input{
+  width:100%;padding:8px 10px;border:2px solid var(--brown-dark);background:var(--cream);
+  font-family:'Roboto Slab',monospace;font-size:12px;border-radius:var(--r-sm);margin-bottom:10px;
+}
+.modal-actions{display:flex;gap:8px;margin-top:10px}
+.modal-actions button{
+  flex:1;padding:10px;border:2px solid var(--brown-dark);
+  font-family:'Shippori Mincho',serif;font-weight:700;font-size:12px;letter-spacing:2px;
+  border-radius:var(--r-sm);cursor:pointer;
+}
+.btn-cancel{background:var(--paper);color:var(--ink)}
+.btn-save{background:var(--red);color:var(--cream);border-color:var(--red-deep)}
+</style>
 </head>
 <body>
 
 <!-- ヘッダー -->
-<div class="header">
-  <div class="header-top">
-    <div class="logo">
-      <div class="logo-icon">楽</div>
-      <div class="logo-text">
-        <div class="main">楽天リサーチ 電話アプリ</div>
-        <div class="sub">UIデザイン: シルクプリマドンナ</div>
-      </div>
+<div class="app-header">
+  <div class="header-row">
+    <div class="r-mark">R</div>
+    <div class="header-title">
+      <div class="ja">楽天リサーチ 電話アプリ</div>
+      <div class="en">Rakuten Research · Call Manager</div>
     </div>
     <div class="header-actions">
-      <button class="btn-header" onclick="syncNow()">🔄 同期</button>
-      <button class="btn-header" onclick="openSettings()">⚙️</button>
+      <button class="icon-btn" onclick="syncNow()" title="同期">↻</button>
+      <button class="icon-btn" onclick="openSettings()" title="設定">⚙</button>
     </div>
   </div>
 </div>
 
-<!-- 電話するバナー -->
-<div class="call-banner">
-  <div class="call-banner-left">
-    <div class="call-banner-icon">📞</div>
-    <div class="call-banner-text">
-      <div class="title">電話する</div>
-      <div class="subtitle" id="call-count-label">読み込み中...</div>
-    </div>
-  </div>
-  <button class="btn-call-now" onclick="setFilter('電話する')">一覧を見る ▶</button>
+<!-- ユーザー切替 -->
+<div class="user-switcher">
+  <button id="userBtn-yusuke" class="user-btn" onclick="switchUser('yusuke')">裕介</button>
+  <button id="userBtn-nozomi" class="user-btn" onclick="switchUser('nozomi')">のぞみ</button>
 </div>
 
-<!-- ダッシュボード -->
-<div class="dashboard">
-  <div class="stat-box"><div class="stat-val" id="stat-total">0</div><div class="stat-lbl">総件数</div></div>
-  <div class="stat-box"><div class="stat-val" id="stat-today">0</div><div class="stat-lbl">今日対象</div></div>
-  <div class="stat-box"><div class="stat-val" id="stat-called">0</div><div class="stat-lbl">電話済み</div></div>
-  <div class="stat-box"><div class="stat-val" id="stat-estimate">0</div><div class="stat-lbl">見積OK</div></div>
-  <div class="stat-box"><div class="stat-val" id="stat-refused">0</div><div class="stat-lbl">断られた</div></div>
-</div>
-
-<!-- 同期バー -->
+<!-- 同期ステータス -->
 <div class="sync-bar">
   <span><span class="sync-dot" id="sync-dot"></span><span id="sync-status">未接続</span></span>
   <span id="sync-time"></span>
 </div>
 
-<!-- フィルターバー -->
+<!-- 電話するバナー -->
+<div class="call-banner">
+  <div class="title">電話する</div>
+  <div class="sub">AI推奨を優先表示します</div>
+  <button class="right-btn" onclick="setFilter('電話する')">一覧 ▶</button>
+</div>
+
+<!-- KPIタイル -->
+<div class="kpi-row" id="kpiRow">
+  <div class="kpi"><div class="v" id="kpiTotal">0</div><div class="l">総件数</div></div>
+  <div class="kpi"><div class="v" id="kpiToday">0</div><div class="l">本日対象</div></div>
+  <div class="kpi"><div class="v" id="kpiCalled">0</div><div class="l">電話済</div></div>
+  <div class="kpi"><div class="v" id="kpiDeal">0</div><div class="l">見積OK</div></div>
+  <div class="kpi"><div class="v" id="kpiNG">0</div><div class="l">断られた</div></div>
+</div>
+
+<!-- フィルタ -->
 <div class="filter-bar">
-  <button class="filter-btn active" data-filter="電話する" onclick="setFilter('電話する')">📞 電話する</button>
-  <button class="filter-btn"        data-filter="all"         onclick="setFilter('all')">すべて</button>
-  <button class="filter-btn"        data-filter="未対応"       onclick="setFilter('未対応')">📋 未対応</button>
-  <button class="filter-btn hidden-filter" data-filter="called"  onclick="setFilter('called')">✅ 電話済み</button>
-  <button class="filter-btn hidden-filter" data-filter="nocall"  onclick="setFilter('nocall')">🚫 電話しない</button>
-  <button class="filter-btn"        data-filter="unreachable"  onclick="setFilter('unreachable')">📵 不通</button>
-  <button class="filter-btn hidden-filter" data-filter="refused" onclick="setFilter('refused')">❌ 断られた</button>
-  <button class="filter-btn"        data-filter="estimate"     onclick="setFilter('estimate')">💰 見積OK</button>
+  <button class="filter-btn active" data-filter="電話する" onclick="setFilter('電話する')">☎ 電話する</button>
+  <button class="filter-btn"        data-filter="all"        onclick="setFilter('all')">すべて</button>
+  <button class="filter-btn"        data-filter="未対応"      onclick="setFilter('未対応')">未対応</button>
+  <button class="filter-btn"        data-filter="called"     onclick="setFilter('called')">電話済</button>
+  <button class="filter-btn"        data-filter="estimate"   onclick="setFilter('estimate')">見積OK</button>
+  <button class="filter-btn"        data-filter="unreachable" onclick="setFilter('unreachable')">不通</button>
+  <button class="filter-btn"        data-filter="refused"    onclick="setFilter('refused')">断られた</button>
 </div>
 
-<!-- ローディング -->
-<div class="loading-spinner show" id="loading">
-  <div class="spinner"></div>
-  データを読み込み中...
-</div>
+<div class="loading show" id="loading">読み込み中...</div>
 
-<!-- カードリスト -->
-<div class="card-list" id="card-list"></div>
+<div class="cards-area" id="cardsArea"></div>
 
-<!-- フッター -->
 <div class="footer" id="footer" style="display:none">
-  <div>楽天リサーチ 電話管理アプリ</div>
-  <div>UIデザイン: <span class="designer">シルクプリマドンナ</span> ｜ PM: アドミラブル</div>
+  楽天リサーチ 電話アプリ
+  <span class="small">UI: AMERICAN VINTAGE · PM: ADMIRABLE</span>
 </div>
 
 <!-- 設定モーダル -->
-<div class="modal-overlay" id="settings-modal">
-  <div class="modal">
-    <h2>⚙️ GAS URL 設定</h2>
-    <p>Google Apps Script の Web App URL を貼り付けてください。<br>
-    同梱の <code>260422_楽天リサーチ電話アプリ_GAS.gs</code> をデプロイして取得したURLです。</p>
-    <input type="text" id="gas-url-input" placeholder="https://script.google.com/macros/s/XXXX/exec">
+<div class="modal-overlay" id="settingsModal" onclick="closeSettings(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-title">⚙ GAS URL 設定</div>
+    <input type="text" id="gas-url-input" placeholder="https://script.google.com/macros/s/AKfycb.../exec">
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeSettings()">キャンセル</button>
-      <button class="btn-save"   onclick="saveSettings()">保存して同期</button>
+      <button class="btn-save" onclick="saveSettings()">保存して同期</button>
     </div>
   </div>
 </div>
 
-<!-- トースト -->
 <div class="toast" id="toast"></div>
 
+<!-- Kuroshiro（フリガナ自動生成）-->
+<script src="https://cdn.jsdelivr.net/npm/kuroshiro@1.2.0/dist/kuroshiro.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/kuroshiro-analyzer-kuromoji@1.1.0/dist/kuroshiro-analyzer-kuromoji.min.js"></script>
+
 <script>
-// ===== フリガナ自動生成 =====
+// ===== Kuroshiro 初期化 =====
+let _kuroshiro = null;
 let _kuroshiroPromise = null;
-
-function initKuroshiro() {
+function initKuroshiro(){
+  if(_kuroshiroPromise) return _kuroshiroPromise;
   _kuroshiroPromise = (async () => {
-    const k = new Kuroshiro();
-    await k.init(new KuromojiAnalyzer());
-    return k;
-  })().catch(() => null);
+    try{
+      _kuroshiro = new Kuroshiro.default();
+      await _kuroshiro.init(new KuromojiAnalyzer({ dictPath: 'https://cdn.jsdelivr.net/npm/kuromoji@0.1.2/dict/' }));
+    }catch(e){ console.warn('kuroshiro init失敗', e); _kuroshiro = null; }
+  })();
+  return _kuroshiroPromise;
 }
-
-async function autoFurigana(rows) {
-  let k;
-  try { k = await _kuroshiroPromise; } catch(e) { return; }
-  if (!k) return;
-  for (const row of rows) {
-    if (row.companyKana) continue;
-    if (!row.company) continue;
-    try {
-      row.companyKana = await k.convert(row.company, { to: 'katakana' });
-    } catch(e) {}
+async function autoFurigana(rows){
+  await initKuroshiro();
+  if(!_kuroshiro) return;
+  for(const row of rows){
+    if(!row.company || row.companyKana) continue;
+    try{ row.companyKana = await _kuroshiro.convert(row.company, { to: 'katakana' }); }catch(e){}
   }
+}
+function rubyText(text, kana){
+  if(!text) return '';
+  if(!kana || kana === text) return text;
+  return `<ruby>${text}<rt>${kana}</rt></ruby>`;
 }
 
 // ===== 設定 =====
-const STORAGE_KEY    = 'rakuten_gas_url_v2';
-const STATUS_KEY     = 'rakuten_statuses_v2';
+const STORAGE_KEY = 'rakuten_gas_url_v2';
+const STATUS_KEY  = 'rakuten_statuses_v2';
 let GAS_URL = localStorage.getItem(STORAGE_KEY) || '';
 
 // ===== データ =====
 let allRows = [];
-let statuses = {};          // { rowNum: { telStatus, dealStatus, statusDate } }
+let statuses = {};
 let currentFilter = '電話する';
 
-// ===== 日付ユーティリティ =====
-function getTodayStr() {
-  const d = new Date();
-  return d.getFullYear().toString() +
-    (d.getMonth()+1).toString().padStart(2,'0') +
-    d.getDate().toString().padStart(2,'0');
+// ===== ユーザー =====
+const USER_MAP = { yusuke:'裕介', nozomi:'のぞみ' };
+let currentUser = localStorage.getItem('repas_current_user') || 'yusuke';
+function uKey(base){ return base + '_' + currentUser; }
+function getUserId(){ return currentUser; }
+function getUserDisplay(){ return USER_MAP[currentUser] || currentUser; }
+function updateUserSwitcher(){
+  document.getElementById('userBtn-yusuke').classList.toggle('active', currentUser==='yusuke');
+  document.getElementById('userBtn-nozomi').classList.toggle('active', currentUser==='nozomi');
+}
+function switchUser(user){
+  if(currentUser===user) return;
+  currentUser=user;
+  localStorage.setItem('repas_current_user', currentUser);
+  updateUserSwitcher();
+  loadLocalStatuses(); renderCards(); syncNow();
 }
 
-// ステータスが「翌日から非表示」対象かどうか
-function isHideStatus(s) {
-  return s.telStatus === '◯' || s.telStatus === '×' || s.dealStatus === '×';
+// ===== 日付 =====
+function getTodayStr(){
+  const d=new Date();
+  return d.getFullYear()+''+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
 }
-
-// 今日の表示から除外すべきか（昨日以前にhideステータス設定済み）
-function shouldHideToday(rowNum) {
-  const s = getStatus(rowNum);
-  if (!isHideStatus(s)) return false;
-  if (!s.statusDate) return false;
-  return s.statusDate < getTodayStr(); // 昨日以前に設定 → 非表示
+function isHideStatus(s){
+  return s.telStatus==='◯' || s.telStatus==='×' || s.dealStatus==='×';
+}
+function shouldHideToday(rowNum){
+  const s=getStatus(rowNum);
+  if(!isHideStatus(s)) return false;
+  if(!s.statusDate) return false;
+  return s.statusDate < getTodayStr();
 }
 
 // ===== 初期化 =====
 window.addEventListener('DOMContentLoaded', () => {
+  updateUserSwitcher();
   initKuroshiro();
   loadLocalStatuses();
-  if (GAS_URL) {
-    syncNow();
-  } else {
+  if(GAS_URL){ syncNow(); }
+  else{
     document.getElementById('loading').classList.remove('show');
-    setSyncStatus('GAS URLを設定してください', 'error');
+    setSyncStatus('GAS URLを設定してください','error');
     openSettings();
   }
 });
 
 // ===== ローカルキャッシュ =====
-function loadLocalStatuses() {
-  try { statuses = JSON.parse(localStorage.getItem(STATUS_KEY) || '{}'); } catch(e) { statuses = {}; }
+function loadLocalStatuses(){
+  try{ statuses = JSON.parse(localStorage.getItem(uKey(STATUS_KEY))||'{}'); }catch(e){ statuses={}; }
 }
-function saveLocalStatuses() {
-  try { localStorage.setItem(STATUS_KEY, JSON.stringify(statuses)); } catch(e) {}
+function saveLocalStatuses(){
+  try{ localStorage.setItem(uKey(STATUS_KEY), JSON.stringify(statuses)); }catch(e){}
 }
-function getStatus(rowNum) {
-  return statuses[rowNum] || { telStatus: '', dealStatus: '', statusDate: '' };
+function getStatus(rowNum){
+  return statuses[rowNum] || { telStatus:'', dealStatus:'', statusDate:'' };
 }
 
 // ===== GAS同期 =====
-async function syncNow() {
-  if (!GAS_URL) { openSettings(); return; }
-  setSyncStatus('同期中...', 'loading');
+async function syncNow(){
+  if(!GAS_URL){ openSettings(); return; }
+  setSyncStatus('同期中...','loading');
   document.getElementById('loading').classList.add('show');
-  try {
+  try{
     const res = await fetch(GAS_URL + '?action=get&t=' + Date.now());
     const data = await res.json();
-    if (!data.ok) throw new Error(data.error || 'APIエラー');
+    if(!data.ok) throw new Error(data.error || 'APIエラー');
     allRows = data.rows;
     await autoFurigana(allRows);
-    // サーバーステータスでローカルを更新（statusDateは保持）
-    for (const r of allRows) {
+    // サーバステータスでローカル更新
+    for(const r of allRows){
       const existing = statuses[r.row] || {};
       statuses[r.row] = {
         telStatus:  r.telStatus  || existing.telStatus  || '',
         dealStatus: r.dealStatus || existing.dealStatus || '',
-        statusDate: existing.statusDate || (isHideStatus({telStatus: r.telStatus, dealStatus: r.dealStatus}) ? getTodayStr() : '')
+        statusDate: existing.statusDate || (isHideStatus({telStatus:r.telStatus,dealStatus:r.dealStatus}) ? getTodayStr() : '')
       };
     }
     saveLocalStatuses();
-    const now = new Date();
-    setSyncStatus('同期済み', 'ok');
+    setSyncStatus('同期済み','ok');
+    const now=new Date();
     document.getElementById('sync-time').textContent =
-      now.getHours().toString().padStart(2,'0') + ':' +
-      now.getMinutes().toString().padStart(2,'0') + ':' +
-      now.getSeconds().toString().padStart(2,'0') + ' 更新';
-    showToast(`✅ ${allRows.length}件を読み込みました`);
-  } catch (err) {
-    setSyncStatus('同期エラー: ' + err.message, 'error');
-    showToast('❌ 同期失敗: ' + err.message);
-  } finally {
+      String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+':'+String(now.getSeconds()).padStart(2,'0')+' 更新';
+    showToast(`✓ ${allRows.length}件を読み込みました`);
+  }catch(err){
+    setSyncStatus('同期エラー: '+err.message,'error');
+    showToast('✗ 同期失敗: '+err.message);
+  }finally{
     document.getElementById('loading').classList.remove('show');
-    document.getElementById('footer').style.display = '';
+    document.getElementById('footer').style.display='';
     renderCards();
   }
 }
 
-// ===== シートへ即時書き込み =====
-async function pushStatus(rowNum, telStatus, dealStatus) {
-  if (!GAS_URL) return;
-  const body = { action: 'update', row: rowNum };
-  if (telStatus  !== undefined) body.telStatus  = telStatus;
-  if (dealStatus !== undefined) body.dealStatus = dealStatus;
-  try {
-    const res = await fetch(GAS_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-    const data = await res.json();
-    if (!data.ok) throw new Error(data.error);
-  } catch (err) {
-    showToast('⚠️ 書き込みエラー: ' + err.message);
+// ===== ステータス書き込み =====
+async function pushStatus(rowNum, telStatus, dealStatus){
+  if(!GAS_URL) return;
+  const body = { action:'update', row:rowNum };
+  if(telStatus  !== undefined) body.telStatus  = telStatus;
+  if(dealStatus !== undefined) body.dealStatus = dealStatus;
+  try{
+    const res = await fetch(GAS_URL,{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+    const j = await res.json();
+    if(!j.ok) showToast('✗ 書込失敗: '+(j.error||''));
+  }catch(e){
+    showToast('✗ オフライン保留: ローカルに記録されています');
   }
 }
 
-// ===== ステータス操作 =====
-async function setTelStatus(rowNum, value, btns) {
-  const cur = getStatus(rowNum).telStatus;
-  const newVal = cur === value ? '' : value;
-  const today = getTodayStr();
-  statuses[rowNum] = {
-    ...getStatus(rowNum),
-    telStatus: newVal,
-    statusDate: newVal ? today : ''
-  };
-  saveLocalStatuses();
-  renderBtnsState(rowNum);
-  renderDashboard();
-  updateCardAppearance(rowNum);
-
-  btns.forEach(b => b.classList.add('saving'));
-  await pushStatus(rowNum, newVal, undefined);
-  btns.forEach(b => b.classList.remove('saving'));
-  showToast('保存しました (' + (newVal || '解除') + ')');
-
-  // hideステータスが設定されたら翌日から消える旨を通知
-  if (newVal === '◯' || newVal === '×') {
-    showToast('明日から自動的に非表示になります');
-  }
+// ===== UI =====
+function setSyncStatus(text, cls){
+  document.getElementById('sync-status').textContent = text;
+  const dot = document.getElementById('sync-dot');
+  dot.className = 'sync-dot ' + (cls||'');
 }
-
-async function setDealStatus(rowNum, value, btns) {
-  const cur = getStatus(rowNum).dealStatus;
-  const newVal = cur === value ? '' : value;
-  const today = getTodayStr();
-  statuses[rowNum] = {
-    ...getStatus(rowNum),
-    dealStatus: newVal,
-    statusDate: newVal === '×' ? today : (getStatus(rowNum).statusDate || '')
-  };
-  saveLocalStatuses();
-  renderBtnsState(rowNum);
-  renderDashboard();
-  updateCardAppearance(rowNum);
-
-  btns.forEach(b => b.classList.add('saving'));
-  await pushStatus(rowNum, undefined, newVal);
-  btns.forEach(b => b.classList.remove('saving'));
-  showToast('保存しました (' + (newVal || '解除') + ')');
-
-  if (newVal === '×') {
-    showToast('明日から自動的に非表示になります');
-  }
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2400);
 }
-
-function updateCardAppearance(rowNum) {
-  const card = document.getElementById('card-' + rowNum);
-  if (!card) return;
-  const s = getStatus(rowNum);
-  card.className = 'maker-card' +
-    (s.telStatus === '◯'   ? ' status-called' : '') +
-    (s.telStatus === '×'   ? ' status-nocall' : '') +
-    (s.telStatus === '不通' ? ' status-unreachable' : '') +
-    (s.dealStatus === '◯'  ? ' status-deal-ok' : '') +
-    (shouldHideToday(rowNum) ? ' hidden-card' : '');
-  // hidden-badgeの更新
-  const badge = card.querySelector('.hidden-badge');
-  if (badge) badge.style.display = shouldHideToday(rowNum) ? '' : 'none';
-}
-
-function renderBtnsState(rowNum) {
-  const s = getStatus(rowNum);
-  const telEntries = [
-    [`tel-${rowNum}-schedule`, '電話する', 'active-schedule'],
-    [`tel-${rowNum}-called`,   '◯',        'active-called'],
-    [`tel-${rowNum}-nocall`,   '×',        'active-nocall'],
-    [`tel-${rowNum}-unreach`,  '不通',      'active-unreachable'],
-  ];
-  for (const [id, val, cls] of telEntries) {
-    const btn = document.getElementById(id);
-    if (btn) btn.className = 'status-btn' + (s.telStatus === val ? ' ' + cls : '');
-  }
-  const dealEntries = [
-    [`deal-${rowNum}-ok`, '◯', 'active-deal-ok'],
-    [`deal-${rowNum}-ng`, '×', 'active-deal-ng'],
-  ];
-  for (const [id, val, cls] of dealEntries) {
-    const btn = document.getElementById(id);
-    if (btn) btn.className = 'status-btn' + (s.dealStatus === val ? ' ' + cls : '');
-  }
-}
-
-// ===== フィルター =====
-function setFilter(filter) {
-  currentFilter = filter;
-  document.querySelectorAll('.filter-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.filter === filter);
-  });
-  renderCards();
-}
-
-function matchesFilter(row) {
-  const s = getStatus(row.row);
-  const hideToday = shouldHideToday(row.row);
-
-  switch(currentFilter) {
-    case '電話する':     return s.telStatus === '電話する';
-    case 'all':          return true;
-    case '未対応':       return !s.telStatus && !s.dealStatus;
-    case 'called':       return s.telStatus === '◯';
-    case 'nocall':       return s.telStatus === '×';
-    case 'unreachable':  return s.telStatus === '不通';
-    case 'estimate':     return s.dealStatus === '◯';
-    case 'refused':      return s.dealStatus === '×';
-    default:             return true;
-  }
-}
-
-// ===== レンダリング =====
-function renderCards() {
-  const list = document.getElementById('card-list');
-  const filtered = allRows.filter(matchesFilter);
-  updateCallBanner();
-
-  if (filtered.length === 0) {
-    list.innerHTML = `<div class="empty-state"><div class="icon">${currentFilter === '今日電話する' ? '🎉' : '🔍'}</div>
-      <p>${currentFilter === '今日電話する' ? '本日の電話リストはすべて完了！' : '該当するデータがありません'}</p></div>`;
-    renderDashboard();
-    return;
-  }
-
-  list.innerHTML = filtered.map(row => buildCard(row)).join('');
-  renderDashboard();
-}
-
-function updateCallBanner() {
-  const callCount = allRows.filter(r => getStatus(r.row).telStatus === '電話する').length;
-  document.getElementById('call-count-label').textContent =
-    callCount > 0 ? `電話する ${callCount}件 リストアップ中` : 'リストに追加してから発信しよう';
-}
-
-function buildCard(row) {
-  const s = getStatus(row.row);
-  const hideToday = shouldHideToday(row.row);
-  const cardCls = ['maker-card',
-    s.telStatus === '◯'    ? 'status-called' : '',
-    s.telStatus === '×'    ? 'status-nocall' : '',
-    s.telStatus === '不通'  ? 'status-unreachable' : '',
-    s.dealStatus === '◯'   ? 'status-deal-ok' : '',
-    hideToday ? 'hidden-card' : ''
-  ].filter(Boolean).join(' ');
-
-  const telBtnBase = (val, label, activeCls) => {
-    const isActive = s.telStatus === val;
-    return `<button id="tel-${row.row}-${val.replace(/[◯×]/g, encodeURIComponent)}" class="status-btn${isActive ? ' '+activeCls : ''}"
-      onclick="onTelClick(${row.row}, '${val}')">${label}</button>`;
-  };
-  const dealBtnBase = (val, label, activeCls) => {
-    const isActive = s.dealStatus === val;
-    return `<button id="deal-${row.row}-${val.replace(/[◯×]/g, encodeURIComponent)}" class="status-btn${isActive ? ' '+activeCls : ''}"
-      onclick="onDealClick(${row.row}, '${val}')">${label}</button>`;
-  };
-
-  // ボタンIDをシンプルに
-  const telScheduleId  = `tel-${row.row}-schedule`;
-  const telCalledId    = `tel-${row.row}-called`;
-  const telNocallId    = `tel-${row.row}-nocall`;
-  const telUnreachId   = `tel-${row.row}-unreach`;
-  const dealOkId       = `deal-${row.row}-ok`;
-  const dealNgId       = `deal-${row.row}-ng`;
-
-  const telScheduleActive  = s.telStatus === '電話する' ? ' active-schedule'    : '';
-  const telCalledActive    = s.telStatus === '◯'        ? ' active-called'      : '';
-  const telNocallActive    = s.telStatus === '×'        ? ' active-nocall'      : '';
-  const telUnreachActive   = s.telStatus === '不通'     ? ' active-unreachable' : '';
-  const dealOkActive       = s.dealStatus === '◯'       ? ' active-deal-ok'     : '';
-  const dealNgActive       = s.dealStatus === '×'       ? ' active-deal-ng'     : '';
-
-  const phoneHtml = row.phone
-    ? `<span class="phone-number">${escapeHtml(row.phone)}</span>`
-    : `<span class="no-phone">電話番号なし</span>`;
-
-  const callBtnHtml = row.phone
-    ? `<a class="btn-call-card" href="tel:${escapeHtml(row.phone)}">📞 電話する　${escapeHtml(row.phone)}</a>`
-    : `<button class="btn-call-card no-number">📞 電話番号なし</button>`;
-
-  const productDisplay = row.product
-    ? `<div class="product-name"><span class="label">商品名</span><span>${rubyText(row.product, row.productKana)}</span></div>`
-    : `<div class="product-name"><span class="label">商品名</span><span style="color:var(--gray-400)">（未登録）</span></div>`;
-
-  const rakutenBtnHtml = row.rakutenUrl
-    ? `<a class="btn-rakuten" href="${escapeHtml(row.rakutenUrl)}" target="_blank">🛒 楽天市場ページを開く</a>`
-    : `<span class="btn-rakuten no-url">🛒 楽天URLなし</span>`;
-
-  const hiddenBadge = hideToday
-    ? `<span class="hidden-badge">昨日以前に対応済み（フィルター表示中）</span>`
-    : '';
-
-  return `
-<div class="maker-card ${cardCls}" id="card-${row.row}">
-  <div class="card-top">
-    <div class="card-info">
-      <div class="row-badge">Row ${row.row}</div>
-      <div class="company-name">${rubyText(row.company || '（会社名なし）', row.companyKana)}</div>
-      <div class="phone-row">${phoneHtml}</div>
-      ${productDisplay}
-      ${hiddenBadge}
-    </div>
-  </div>
-  <div class="card-action-row">
-    ${callBtnHtml}
-    ${rakutenBtnHtml}
-  </div>
-  <div class="status-section">
-    <div class="status-row">
-      <span class="status-label">📞 電話状況</span>
-      <div class="status-btns">
-        <button id="${telScheduleId}" class="status-btn${telScheduleActive}" onclick="onTelClick(${row.row}, '電話する')">📞 電話する</button>
-        <button id="${telCalledId}"  class="status-btn${telCalledActive}"  onclick="onTelClick(${row.row}, '◯')">◯ 電話した</button>
-        <button id="${telNocallId}"  class="status-btn${telNocallActive}"  onclick="onTelClick(${row.row}, '×')">× 電話しない</button>
-        <button id="${telUnreachId}" class="status-btn${telUnreachActive}" onclick="onTelClick(${row.row}, '不通')">📵 不通</button>
-      </div>
-    </div>
-    <div class="status-row">
-      <span class="status-label">💼 取引可否</span>
-      <div class="status-btns">
-        <button id="${dealOkId}" class="status-btn${dealOkActive}" onclick="onDealClick(${row.row}, '◯')">◯ 見積もりもらえた</button>
-        <button id="${dealNgId}" class="status-btn${dealNgActive}" onclick="onDealClick(${row.row}, '×')">× 断られた</button>
-      </div>
-    </div>
-  </div>
-</div>`;
-}
-
-function onTelClick(rowNum, value) {
-  const ids = [`tel-${rowNum}-schedule`, `tel-${rowNum}-called`, `tel-${rowNum}-nocall`, `tel-${rowNum}-unreach`];
-  const btns = ids.map(id => document.getElementById(id)).filter(Boolean);
-  setTelStatus(rowNum, value, btns);
-}
-
-function onDealClick(rowNum, value) {
-  const ids = [`deal-${rowNum}-ok`, `deal-${rowNum}-ng`];
-  const btns = ids.map(id => document.getElementById(id)).filter(Boolean);
-  setDealStatus(rowNum, value, btns);
-}
-
-function renderDashboard() {
-  let total = 0, today = 0, called = 0, estimate = 0, refused = 0;
-  for (const row of allRows) {
-    total++;
-    const s = getStatus(row.row);
-    if (!shouldHideToday(row.row) && !isHideStatus(s)) today++;
-    if (s.telStatus === '◯')  called++;
-    if (s.dealStatus === '◯') estimate++;
-    if (s.dealStatus === '×') refused++;
-  }
-  document.getElementById('stat-total').textContent    = total;
-  document.getElementById('stat-today').textContent    = today;
-  document.getElementById('stat-called').textContent   = called;
-  document.getElementById('stat-estimate').textContent = estimate;
-  document.getElementById('stat-refused').textContent  = refused;
-}
-
-// ===== 設定 =====
-function openSettings() {
+function openSettings(){
   document.getElementById('gas-url-input').value = GAS_URL;
-  document.getElementById('settings-modal').classList.add('open');
+  document.getElementById('settingsModal').classList.add('show');
 }
-function closeSettings() { document.getElementById('settings-modal').classList.remove('open'); }
-function saveSettings() {
+function closeSettings(ev){
+  if(ev && ev.target.id !== 'settingsModal' && ev.type==='click') return;
+  document.getElementById('settingsModal').classList.remove('show');
+}
+function saveSettings(){
   const url = document.getElementById('gas-url-input').value.trim();
-  if (!url) { showToast('URLを入力してください'); return; }
-  if (!url.startsWith('https://script.google.com/')) {
-    if (!confirm('Google Apps Script のURLではないようです。このまま保存しますか？')) return;
-  }
+  if(!url){ showToast('URLを入力してください'); return; }
   GAS_URL = url;
   localStorage.setItem(STORAGE_KEY, GAS_URL);
-  closeSettings();
+  closeSettings({type:'manual'});
   syncNow();
 }
 
-// ===== ユーティリティ =====
-function setSyncStatus(text, state) {
-  document.getElementById('sync-status').textContent = text;
-  const dot = document.getElementById('sync-dot');
-  dot.className = 'sync-dot' + (state ? ' ' + state : '');
-}
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => t.classList.remove('show'), 2500);
-}
-function escapeHtml(str) {
-  if (!str) return '';
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+// ===== フィルタ＆ソート =====
+function setFilter(f){
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter===f));
+  renderCards();
 }
 
-// フリガナがある場合は<ruby>タグで表示、なければそのまま
-function rubyText(text, kana) {
-  const t = escapeHtml(text);
-  if (!kana) return t;
-  return `<ruby>${t}<rt>${escapeHtml(kana)}</rt></ruby>`;
+function applyFilter(rows){
+  // 1. ステータスフィルタ
+  let filtered;
+  if(currentFilter === 'all'){
+    filtered = rows;
+  }else if(currentFilter === '電話する'){
+    filtered = rows.filter(r => {
+      if(shouldHideToday(r.row)) return false;
+      const s = getStatus(r.row);
+      // 電話済 or 断られた or 電話しない は除外
+      if(s.telStatus==='◯' || s.telStatus==='×' || s.dealStatus==='×') return false;
+      return true;
+    });
+  }else if(currentFilter === '未対応'){
+    filtered = rows.filter(r => {
+      const s = getStatus(r.row);
+      return !s.telStatus && !s.dealStatus;
+    });
+  }else if(currentFilter === 'called'){
+    filtered = rows.filter(r => getStatus(r.row).telStatus==='◯');
+  }else if(currentFilter === 'estimate'){
+    filtered = rows.filter(r => getStatus(r.row).dealStatus==='◯');
+  }else if(currentFilter === 'unreachable'){
+    filtered = rows.filter(r => getStatus(r.row).telStatus==='不通');
+  }else if(currentFilter === 'refused'){
+    filtered = rows.filter(r => getStatus(r.row).dealStatus==='×');
+  }else{
+    filtered = rows;
+  }
+  // 2. ソート：AI=◯ > AI空 > AI=×
+  return filtered.slice().sort((a,b) => aiRank(a.aiReco) - aiRank(b.aiReco));
 }
+
+function aiRank(v){
+  const s = String(v||'').trim();
+  if(s === '◯') return 0;
+  if(s === '×') return 2;
+  return 1;
+}
+
+// ===== KPI =====
+function updateKPI(){
+  const total = allRows.length;
+  const today = applyFilter(allRows).length;  // 「電話する」フィルタの基準で
+  let called=0,deal=0,ng=0;
+  for(const r of allRows){
+    const s = getStatus(r.row);
+    if(s.telStatus==='◯') called++;
+    if(s.dealStatus==='◯') deal++;
+    if(s.dealStatus==='×') ng++;
+  }
+  document.getElementById('kpiTotal').textContent = total;
+  document.getElementById('kpiToday').textContent = (currentFilter==='電話する' ? today : '-');
+  document.getElementById('kpiCalled').textContent = called;
+  document.getElementById('kpiDeal').textContent = deal;
+  document.getElementById('kpiNG').textContent = ng;
+}
+
+// ===== レンダリング =====
+function renderCards(){
+  updateKPI();
+  const area = document.getElementById('cardsArea');
+  const rows = applyFilter(allRows);
+
+  if(!rows.length){
+    area.innerHTML = `<div class="empty-state"><div class="icon">☐</div><div class="text">該当するデータがありません</div></div>`;
+    return;
+  }
+
+  area.innerHTML = rows.map(r => cardHtml(r)).join('');
+}
+
+function cardHtml(row){
+  const s = getStatus(row.row);
+  const ai = String(row.aiReco||'').trim();
+  let aiBadgeClass = 'no';
+  let aiTopText = 'AI';
+  let aiMidText = '—';
+  if(ai === '◯'){ aiBadgeClass=''; aiTopText='AI'; aiMidText='○'; }
+  else if(ai === '×'){ aiBadgeClass='skip'; aiTopText='AI'; aiMidText='×'; }
+
+  // ステータス表示タグ
+  let tags = '';
+  if(s.telStatus==='◯')  tags += '<span class="status-tag tag-tel-done">電話済</span>';
+  if(s.telStatus==='×')  tags += '<span class="status-tag tag-tel-ng">電話しない</span>';
+  if(s.telStatus==='不通') tags += '<span class="status-tag tag-tel-busy">不通</span>';
+  if(s.dealStatus==='◯') tags += '<span class="status-tag tag-deal-done">見積OK</span>';
+  if(s.dealStatus==='×') tags += '<span class="status-tag tag-deal-ng">断られた</span>';
+
+  const productHtml = row.product
+    ? `<div class="product-name"><span class="label">商品</span>${rubyText(row.product, row.productKana||'')}</div>`
+    : '';
+
+  const phone = row.phone ? row.phone.replace(/[^\d\-+]/g,'') : '';
+  const rakBtn = row.rakutenUrl
+    ? `<a class="btn-action btn-rakuten" href="${row.rakutenUrl}" target="_blank" rel="noopener">楽天</a>`
+    : `<button class="btn-action btn-rakuten" disabled style="opacity:0.5">楽天</button>`;
+  const callBtn = phone
+    ? `<a class="btn-action btn-call" href="tel:${phone}">電話する</a>`
+    : `<button class="btn-action btn-call" disabled style="opacity:0.5">電話する</button>`;
+
+  return `
+  <div class="company-card" data-row="${row.row}">
+    <div class="card-top">
+      <div class="ai-badge ${aiBadgeClass}"><div class="top">${aiTopText}</div><div class="mid">${aiMidText}</div></div>
+      <div class="company-block">
+        <div class="company-name">${rubyText(row.company || '（会社名なし）', row.companyKana||'')}</div>
+        ${productHtml}
+        ${tags ? `<div style="margin-top:5px">${tags}</div>` : ''}
+      </div>
+    </div>
+    ${row.phone ? `<div class="phone-block"><span class="phone-icon">☎</span><span class="phone-number">${row.phone}</span></div>` : ''}
+    <div class="btn-group">${callBtn}${rakBtn}</div>
+    <div class="status-divider">▼ 電話結果</div>
+    <div class="status-row">
+      <button class="status-chip tel-ok ${s.telStatus==='◯'?'active':''}" onclick="setTelStatus(${row.row},'◯')">○ 完了</button>
+      <button class="status-chip tel-busy ${s.telStatus==='不通'?'active':''}" onclick="setTelStatus(${row.row},'不通')">不通</button>
+      <button class="status-chip tel-ng ${s.telStatus==='×'?'active':''}" onclick="setTelStatus(${row.row},'×')">× 不要</button>
+    </div>
+    <div class="status-divider">▼ 取引可否</div>
+    <div class="status-row">
+      <button class="status-chip deal-ok ${s.dealStatus==='◯'?'active':''}" onclick="setDealStatus(${row.row},'◯')">○ 見積OK</button>
+      <button class="status-chip deal-pending ${s.dealStatus==='ー'?'active':''}" onclick="setDealStatus(${row.row},'ー')">ー 保留</button>
+      <button class="status-chip deal-ng ${s.dealStatus==='×'?'active':''}" onclick="setDealStatus(${row.row},'×')">× 断られ</button>
+    </div>
+  </div>`;
+}
+
+// ===== ステータス更新 =====
+function setTelStatus(rowNum, v){
+  const s = getStatus(rowNum);
+  const newV = (s.telStatus===v) ? '' : v;
+  statuses[rowNum] = { telStatus:newV, dealStatus:s.dealStatus, statusDate: newV ? getTodayStr() : s.statusDate };
+  saveLocalStatuses();
+  pushStatus(rowNum, newV, undefined);
+  renderCards();
+  showToast(newV ? `電話: ${newV}` : 'クリア');
+}
+function setDealStatus(rowNum, v){
+  const s = getStatus(rowNum);
+  const newV = (s.dealStatus===v) ? '' : v;
+  statuses[rowNum] = { telStatus:s.telStatus, dealStatus:newV, statusDate: newV ? getTodayStr() : s.statusDate };
+  saveLocalStatuses();
+  pushStatus(rowNum, undefined, newV);
+  renderCards();
+  showToast(newV ? `取引: ${newV}` : 'クリア');
+}
+
 </script>
-
 </body>
 </html>
